@@ -1,11 +1,9 @@
-from xml.dom.minidom import Document
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-
 from .models import Patient,Archive,PatientJournal,ExternalDocument
 from .serializers import PatientSerializer,ArchiveSerializer,PatientJournalSerializer,ExternalDocumentSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -20,8 +18,12 @@ def patients(request):
 @api_view(['GET','PUT','DELETE'])
 def patient(request,pid):
     if request.method == 'GET':
-        patient = Patient.objects.get(id=pid)
+        try:
+            patient = Patient.objects.get(id=pid)
+        except ObjectDoesNotExist:
+            return Response(status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient)
+
         return Response(serializer.data)
     elif request.method == 'POST':
         return
@@ -37,7 +39,10 @@ def patient_documents(request,pid):
 
 @api_view(['GET'])
 def patient_document(request,pid,did):
-    document = ExternalDocument.objects.get(patient_id=pid,id=did)
+    try:
+        document = ExternalDocument.objects.get(patient_id=pid,id=did)
+    except ObjectDoesNotExist:
+        return Response(status.HTTP_404_NOT_FOUND)
     serializer = ExternalDocumentSerializer(document)
     return Response(serializer.data)
 
@@ -51,7 +56,10 @@ def patient_journals(request,pid):
 
 @api_view(['GET'])
 def patient_journal(request,pid,jid):
-    journal = PatientJournal.objects.get(patient_id=pid,id=jid)
+    try:
+        journal = PatientJournal.objects.get(patient_id=pid,id=jid)
+    except ObjectDoesNotExist:
+        return Response(status.HTTP_404_NOT_FOUND)
     serializer = PatientJournalSerializer(journal)
     return Response(serializer.data)
 
@@ -63,6 +71,9 @@ def archives(request):
 
 @api_view(['GET'])
 def archive(request,aid):
-    archive = Archive.objects.get(id=aid)
+    try:
+        archive = Archive.objects.get(id=aid)
+    except ObjectDoesNotExist:
+        return Response(status.HTTP_404_NOT_FOUND)
     serializer = ArchiveSerializer(archive)
     return Response(serializer.data)
