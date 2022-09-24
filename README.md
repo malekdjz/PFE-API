@@ -7,9 +7,5 @@ In this version i'm only making an api using django and later on will consider o
 
 Ps:I just started learning django, let's see how long will it take me to grasp it.
 
-{
-"user":1,
-"name":"john",
-"last_name":"doe",
-"sexe":"m",
-}
+Django version : 4.1.1
+Django rest framework version : 3.13.1
