@@ -1,23 +1,21 @@
 from rest_framework import serializers
 
-from .models import Patient,Archive,PatientJournal,ExternalDocument
+from .models import PatientFile,PatientJournal,ExternalDocument
 
-class PatientSerializer(serializers.Serializer):
-    class meta:
-        model = Patient
+class PatientFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientFile
         fields = '__all__'
-    
-class ArchiveSerializer(serializers.Serializer):
-    class meta:
-        model = Archive
-        fields = '__all__'
+        read_only_fields = ('created_at','id')
 
-class PatientJournalSerializer(serializers.Serializer):
-    class meta:
+class PatientJournalSerializer(serializers.ModelSerializer):
+    class Meta:
         model = PatientJournal
         fields = '__all__'
+        read_only_fields = ('created_at','id')
 
-class ExternalDocumentSerializer(serializers.Serializer):
-    class meta:
+class ExternalDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
         model = ExternalDocument
         fields = '__all__'
+        read_only_fields = ('created_at',)
