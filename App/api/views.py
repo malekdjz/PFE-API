@@ -16,7 +16,7 @@ def logout(request):
 @api_view(['GET','POST'])
 def patients(request):
     if request.method == 'GET':
-        patients = PatientFile.objects.all().values('id','name','last_name','sexe')
+        patients = PatientFile.objects.all()
         serializer = PatientFileSerializer(patients,many=True)
         return Response(serializer.data)
 

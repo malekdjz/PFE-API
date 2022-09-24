@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import PatientFile,PatientJournal,ExternalDocument
 
 class PatientFileSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = PatientFile
         fields = '__all__'
