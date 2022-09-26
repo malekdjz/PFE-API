@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from django.db.models import Q
+from .myfuncs import sanitize
 # Create your views here.
 
 @api_view(['POST'])
@@ -15,7 +16,12 @@ def logout(request):
     return
 
 @api_view(['GET'])
+def advanced_search(request,query):
+    return
+
+@api_view(['GET'])
 def search_patient(request,query):
+    query = sanitize(query)
     patients = PatientFile.objects.filter(Q(name__contains=query)|Q(last_name__contains=query))
     serializer = PatientSerializer(patients,many=True)
     return Response(serializer.data)
@@ -23,7 +29,7 @@ def search_patient(request,query):
 @api_view(['GET','POST'])
 def patients(request):
     if request.method == 'GET':
-        patients = PatientFile.objects.all().values('id','name','last_name','birth_date')
+        patients = PatientFile.objects.all().values('id','name','last_name','birth_date','archived')
         serializer = PatientSerializer(patients,many=True)
         return Response(serializer.data)
 
