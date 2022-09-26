@@ -29,7 +29,7 @@ class PatientFile (models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     class meta:
-        ordering = ['created_at']
+        ordering = ['id']
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
@@ -37,7 +37,7 @@ class ExternalDocument(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     class meta:
-        ordering = ['created_at']
+        ordering = ['id']
 
 class PatientJournal(models.Model):
     patient=  models.ForeignKey(PatientFile,on_delete=models.CASCADE)
@@ -49,4 +49,4 @@ class PatientJournal(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     class meta:
-        ordering = ['creted_at']
+        ordering = ['id']

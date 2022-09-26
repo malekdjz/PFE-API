@@ -1,8 +1,9 @@
 from .models import PatientFile,PatientJournal,ExternalDocument
-from .serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer
+from .serializers import PatientFileSerializer,PatientSerializer,PatientJournalSerializer,ExternalDocumentSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from django.db.models import Q
 # Create your views here.
 
 @api_view(['POST'])
@@ -13,11 +14,17 @@ def login(request):
 def logout(request):
     return
 
+@api_view(['GET'])
+def search_patient(request,query):
+    patients = PatientFile.objects.filter(Q(name__contains=query)|Q(last_name__contains=query))
+    serializer = PatientSerializer(patients,many=True)
+    return Response(serializer.data)
+
 @api_view(['GET','POST'])
 def patients(request):
     if request.method == 'GET':
-        patients = PatientFile.objects.all()
-        serializer = PatientFileSerializer(patients,many=True)
+        patients = PatientFile.objects.all().values('id','name','last_name','birth_date')
+        serializer = PatientSerializer(patients,many=True)
         return Response(serializer.data)
 
     serializer = PatientFileSerializer(data=request.data)
