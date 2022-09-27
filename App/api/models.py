@@ -28,16 +28,12 @@ class PatientFile (models.Model):
     archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
-    class meta:
-        ordering = ['id']
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
     link = models.CharField(max_length=50)
     created_at = models.DateTimeField(default=timezone.now)
 
-    class meta:
-        ordering = ['id']
 
 class PatientJournal(models.Model):
     patient=  models.ForeignKey(PatientFile,on_delete=models.CASCADE)
@@ -47,6 +43,3 @@ class PatientJournal(models.Model):
     complementary_exam = models.TextField(null=True,blank=True)
     date = models.DateField(default=None)
     created_at = models.DateTimeField(default=timezone.now)
-
-    class meta:
-        ordering = ['id']
