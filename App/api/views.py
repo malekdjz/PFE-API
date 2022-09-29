@@ -1,6 +1,5 @@
-from wsgiref import validate
 from .models import PatientFile,PatientJournal,ExternalDocument
-from .serializers import PatientFileSerializer,PatientSerializer,PatientJournalSerializer,ExternalDocumentSerializer
+from .serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -17,33 +16,6 @@ def login(request):
 def logout(request):
     return
 
-@api_view(['GET'])
-def advanced_search(request):
-    #TODO : this function is to be removed
-    params = request.GET
-    query = sanitize(params.get('q'),'')
-    order = sanitize(params.get('o'),'')
-    ascending = sanitize(params.get('a'),'')
-    entry = sanitize(params.get('e'),'')
-    discharge = sanitize(params.get('d'),'')
-    birth = sanitize(params.get('b'),'')
-
-    q = PatientFile.objects.filter(Q(name__conatins=query)|
-        Q(last_name__contains=query)|
-        Q(adress__contains=query)|
-        Q(birth_place__contains=query)
-        )
-    if validate_orderby(order):
-        pass
-    return
-
-@api_view(['GET'])
-def search_patient(request,query):
-    #TODO : this function is to be removed
-    query = sanitize(query)
-    patients = PatientFile.objects.filter(Q(name__contains=query)|Q(last_name__contains=query))
-    serializer = PatientSerializer(patients,many=True)
-    return Response(serializer.data)
 
 @api_view(['GET','POST'])
 def patients(request):
@@ -52,19 +24,28 @@ def patients(request):
         params = request.GET
         query = sanitize(params.get('q',''))
         order = params.get('o','')
-        ascending = params.get('a','')
+        ascending = params.get('asc','')
         entry = params.get('e','')
         discharge = params.get('d','')
-        birth = params.get('b','')
+        born_after = params.get('ba','')
+        born_before = params.get('bb','')
+        archived = params.get('a','')
 
-        q = PatientFile.objects.filter(Q(name__conatins=query)|
+        q = PatientFile.objects.filter(Q(name__contains=query)|
         Q(last_name__contains=query)|
         Q(adress__contains=query)|
         Q(birth_place__contains=query)
         )
+        if archived == "true":
+            q = q.filter(archived=True)
+        elif archived == "false":
+            q = q.filter(archived=False)
 
-        if validate_date(birth):
-            q = q.filter(birth_date = birth)
+        if validate_date(born_after):
+            q = q.filter(birth_date__gte = born_after)
+        
+        if validate_date(born_before):
+            q = q.filter(birth_date__lte = born_before)
         
         if validate_date(entry):
             q = q.filter(created_at__gte = entry)
