@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -31,7 +32,7 @@ class PatientFile (models.Model):
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
-    link = models.CharField(max_length=50)
+    link = models.ImageField(upload_to='documents')
     created_at = models.DateTimeField(default=timezone.now)
 
 

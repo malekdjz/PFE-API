@@ -7,6 +7,10 @@ In this version i'm only making an api using django and later on will consider o
 
 Ps:I just started learning django, let's see how long will it take me to grasp it.
 
+Python verison : 3.10.5
+
 Django version : 4.1.1
 
 Django rest framework version : 3.13.1
+
+Pillow version : 9.2.0

@@ -19,4 +19,4 @@ class ExternalDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExternalDocument
         fields = '__all__'
-        read_only_fields = ('created_at','id')
+        read_only_fields = ('created_at','id') 

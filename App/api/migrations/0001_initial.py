@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             name='ExternalDocument',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('link', models.CharField(max_length=50)),
+                ('link',models.ImageField(upload_to=''),),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.patientfile')),
             ],

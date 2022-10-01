@@ -20,7 +20,6 @@ def logout(request):
 @api_view(['GET','POST'])
 def patients(request):
     if request.method == 'GET':
-        #TODO : finish and test whatever this is
         params = request.GET
         query = sanitize(params.get('q',''))
         order = params.get('o','')
@@ -116,6 +115,7 @@ def patient_documents(request,pid):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        print(serializer.errors)
         return Response({'details':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
     return Response({'details':'file is archived'},status.HTTP_403_FORBIDDEN)
 
