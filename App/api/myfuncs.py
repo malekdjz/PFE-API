@@ -1,5 +1,7 @@
 import re
+import os
 
+from django.conf import settings
 def sanitize(query):
     output = ''
     for letter in query:
@@ -15,3 +17,6 @@ def validate_orderby(order):
 
 def validate_date(date):
     return bool(re.match('([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))',date))
+
+def rename_document(document):
+    os.rename(str(settings.BASE_DIR)+'/documents/'+document,'booboo.png')
