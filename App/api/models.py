@@ -32,7 +32,7 @@ class PatientFile (models.Model):
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
-    link = models.ImageField(upload_to='documents')
+    link = models.ImageField()
     created_at = models.DateTimeField(default=timezone.now)
 
 
