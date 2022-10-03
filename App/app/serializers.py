@@ -9,6 +9,13 @@ class PatientFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created_at','id')
 
+class PatientSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = PatientFile
+        fields = '__all__'
+        read_only_fields = ('created_at','id')
+
 class PatientJournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientJournal

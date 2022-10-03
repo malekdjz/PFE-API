@@ -14,3 +14,7 @@ Django version : 4.1.1
 Django rest framework version : 3.13.1
 
 Pillow version : 9.2.0
+
+SimpleJWT version : 5.2.0
+
+Cors Headers version : 3.13.0

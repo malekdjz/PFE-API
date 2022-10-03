@@ -1,4 +1,3 @@
-from distutils.command.upload import upload
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -32,7 +31,7 @@ class PatientFile (models.Model):
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
-    link = models.ImageField()
+    image = models.ImageField()
     created_at = models.DateTimeField(default=timezone.now)
 
 
@@ -42,5 +41,5 @@ class PatientJournal(models.Model):
     general_treatment = models.TextField(null=True,blank=True)
     progress_report = models.TextField(null=True,blank=True)
     complementary_exam = models.TextField(null=True,blank=True)
-    date = models.DateField(default=None)
+    date = models.DateField()
     created_at = models.DateTimeField(default=timezone.now)
