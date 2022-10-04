@@ -9,6 +9,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -79,15 +80,17 @@ class Patients(APIView):
                 q= q.order_by('-'+order)
         if user:
             q = q.filter(user_id=user)
-
-        serializer = PatientFileSerializer(q,many=True)
-        return Response(serializer.data)
+        paginate = PageNumberPagination()
+        results = paginate.paginate_queryset(queryset=q,request=request)
+        serializer = PatientFileSerializer(results,many=True)
+        return Response(serializer.data,status.HTTP_200_OK)
 
     def post(self,request):
         serializer = PatientFileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status.HTTP_200_OK)
+        print(serializer.errors)
         return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
@@ -99,7 +102,7 @@ class Patient(APIView):
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         serializer = PatientFileSerializer(patient)
-        return Response(serializer.data)
+        return Response(serializer.data,status.HTTP_200_OK)
 
     def put(self,request,pid):
         try:
@@ -110,7 +113,7 @@ class Patient(APIView):
             serializer = PatientFileSerializer(patient,data=request.data,partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data,status.HTTP_200_OK)
             print(serializer.errors)
             return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
@@ -124,7 +127,7 @@ class PatientDocument(APIView):
         except:
             return Response({'detail':'document does not exist'},status.HTTP_404_NOT_FOUND)
         serializer = ExternalDocumentSerializer(document)
-        return Response(serializer.data)
+        return Response(serializer.data,status.HTTP_200_OK)
 
 
 class PatientDocuments(APIView):
@@ -132,7 +135,7 @@ class PatientDocuments(APIView):
     def get(self,request,pid):
         documents = ExternalDocument.objects.filter(patient_id=pid)
         serializer = ExternalDocumentSerializer(documents,many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status.HTTP_200_OK)
     
     def post(self,request,pid):
         try:
@@ -143,7 +146,7 @@ class PatientDocuments(APIView):
             serializer = ExternalDocumentSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data,status.HTTP_200_OK)
             print(serializer.errors)
             return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
@@ -154,7 +157,7 @@ class PatientJournals(APIView):
     def get(self,request,pid):
         journals = PatientJournal.objects.filter(patient_id=pid)
         serializer = PatientJournalSerializer(journals,many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status.HTTP_200_OK)
 
     def post(self,request,pid):    
         try:
@@ -165,7 +168,7 @@ class PatientJournals(APIView):
             serializer = PatientJournalSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data,status.HTTP_200_OK)
             return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
     
@@ -178,4 +181,4 @@ class PatientJournal(APIView):
         except:
             return Response(status.HTTP_404_NOT_FOUND)
         serializer = PatientJournalSerializer(journal)
-        return Response(serializer.data)
+        return Response(serializer.data,status.HTTP_200_OK)
