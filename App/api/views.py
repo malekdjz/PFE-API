@@ -54,6 +54,7 @@ class Patients(APIView):
         born_after = params.get('ba','')
         born_before = params.get('bb','')
         archived = params.get('a','')
+        sexe = params.get('s','')
         user = params.get('u','')
 
         q = PatientFile.objects.filter(Q(name__contains=query)|
@@ -61,6 +62,8 @@ class Patients(APIView):
         Q(adress__contains=query)|
         Q(birth_place__contains=query)
         )
+        if sexe == "m"or"f":
+            q = q.filter(sexe=sexe)
         if archived == "true":
             q = q.filter(archived=True)
         elif archived == "false":
@@ -80,10 +83,12 @@ class Patients(APIView):
                 q= q.order_by('-'+order)
         if user:
             q = q.filter(user_id=user)
+        
         paginate = PageNumberPagination()
         results = paginate.paginate_queryset(queryset=q,request=request)
         serializer = PatientFileSerializer(results,many=True)
-        return Response(serializer.data,status.HTTP_200_OK)
+        response = paginate.get_paginated_response(data=serializer.data)
+        return response
 
     def post(self,request):
         serializer = PatientFileSerializer(data=request.data)
@@ -102,7 +107,10 @@ class Patient(APIView):
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         serializer = PatientFileSerializer(patient)
-        return Response(serializer.data,status.HTTP_200_OK)
+        response = serializer.data
+        response['user_first_name'] = patient.user.first_name
+        response['user_last_name'] = patient.user.last_name
+        return Response(response,status.HTTP_200_OK)
 
     def put(self,request,pid):
         try:

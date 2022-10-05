@@ -28,11 +28,17 @@ class PatientFile (models.Model):
     archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return str(self.id) + ": " +self.name + "-" + self.last_name
+
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
     image = models.ImageField()
     created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.patient.id) + ": " + self.patient.name + "-" + self.patient.last_name
 
 
 class PatientJournal(models.Model):
@@ -43,3 +49,7 @@ class PatientJournal(models.Model):
     complementary_exam = models.TextField(null=True,blank=True)
     date = models.DateField()
     created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.patient.id) + ": " + self.patient.name + "-" + self.patient.last_name
+

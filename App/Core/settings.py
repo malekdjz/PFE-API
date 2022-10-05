@@ -20,16 +20,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--xax!ox(!!jam=2((c&yrer84%4m*u!2y*b%(d6$7h9!jzesj%'
+SECRET_KEY = 'django-insecure--xax!ox(!!jam=2((c&yrer84%4m*u!2y*b%(d6$7h9!jzesj%' #<----- This should be changed in a real production env
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] #<----- This needs to be set to the domain/ip of the api's host
 
 CORS_ALLOW_ALL_ORIGINS =  True #<------- THIS IS ONLY FOR DEVELOPMENT
 
-#CORS_ALLOWED_ORIGINS = ['www.exaple.com'] <----- THIS SHOULD BE USED
+#CORS_ALLOWED_ORIGINS = ['www.exaple.com'] <----- This shoud be used in prodution, and should be set to the front ends host/ip
 
 # Application definition
 
@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions'
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE' : 20
+    'PAGE_SIZE' : 1
 }
 
 

@@ -14,4 +14,4 @@ urlpatterns = [
     path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout',views.Logout.as_view(),name='logout'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # <---- this is for developement only
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # <---- this is for developement only, static files need to be configured on the server
