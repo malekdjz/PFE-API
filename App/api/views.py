@@ -14,7 +14,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
 from django.conf import settings
-from os import path
 
 # Create your views here.
 
