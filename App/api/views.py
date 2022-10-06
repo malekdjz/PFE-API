@@ -1,5 +1,7 @@
+import mimetypes
+from urllib import response
 from app.models import PatientFile,PatientJournal,ExternalDocument
-from app.serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer
+from app.serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer,ExternalDocumentsSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
@@ -10,6 +12,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.pagination import PageNumberPagination
+from django.http import HttpResponse
+from django.conf import settings
+from os import path
 
 # Create your views here.
 
@@ -135,14 +140,19 @@ class PatientDocument(APIView):
         except:
             return Response({'detail':'document does not exist'},status.HTTP_404_NOT_FOUND)
         serializer = ExternalDocumentSerializer(document)
-        return Response(serializer.data,status.HTTP_200_OK)
+        p = str(settings.MEDIA_ROOT)+ serializer.data['image']
+        content_type = 'image/png'
+        if not serializer.data['image'].endswith('.png'):
+            content_type = 'image/jpeg'
+        file = open(p,'rb')
+        return HttpResponse(file,content_type=content_type,status=status.HTTP_200_OK)
 
 
 class PatientDocuments(APIView):
     queryset = User.objects.none()
     def get(self,request,pid):
-        documents = ExternalDocument.objects.filter(patient_id=pid)
-        serializer = ExternalDocumentSerializer(documents,many=True)
+        documents = ExternalDocument.objects.filter(patient_id=pid).values('id')
+        serializer = ExternalDocumentsSerializer(documents,many=True)
         return Response(serializer.data,status.HTTP_200_OK)
     
     def post(self,request,pid):

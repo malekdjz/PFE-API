@@ -1,6 +1,9 @@
+from wsgiref.validate import validator
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
+from .validators import validate_file_size
 # Create your models here.
 
 
@@ -34,7 +37,10 @@ class PatientFile (models.Model):
 
 class ExternalDocument(models.Model):
     patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
-    image = models.ImageField()
+    image = models.ImageField(validators=[
+        FileExtensionValidator(['jpg','png','jpeg']),
+        validate_file_size,
+        ])
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

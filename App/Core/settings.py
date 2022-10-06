@@ -138,8 +138,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT = BASE_DIR / 'documents/'
-MEDIA_URL = 'documents/'
+MEDIA_ROOT = BASE_DIR / 'app/documents/'
 
 
 REST_FRAMEWORK = {
@@ -151,7 +150,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions'
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE' : 1
+    'PAGE_SIZE' : 20
 }
 
 
