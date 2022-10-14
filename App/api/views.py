@@ -1,4 +1,3 @@
-import mimetypes
 from urllib import response
 from app.models import PatientFile,PatientJournal,ExternalDocument
 from app.serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer,ExternalDocumentsSerializer
