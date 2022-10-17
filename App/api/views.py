@@ -1,7 +1,6 @@
-import mimetypes
-from urllib import response
-from app.models import PatientFile,PatientJournal,ExternalDocument
-from app.serializers import PatientFileSerializer,PatientJournalSerializer,ExternalDocumentSerializer,ExternalDocumentsSerializer
+
+from app.models import *
+from app.serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
@@ -46,6 +45,8 @@ class Logout(APIView):
             return Response(status.HTTP_400_BAD_REQUEST)
 
 
+
+
 class Patients(APIView):
     queryset = User.objects.none()
     def get(self,request):
@@ -61,12 +62,12 @@ class Patients(APIView):
         sexe = params.get('s','')
         user = params.get('u','')
 
-        q = PatientFile.objects.filter(Q(name__contains=query)|
-        Q(last_name__contains=query)|
-        Q(adress__contains=query)|
-        Q(birth_place__contains=query)
+        q = PatientFile.objects.filter(Q(name__icontains=query)|
+        Q(last_name__icontains=query)|
+        Q(adress__icontains=query)|
+        Q(birth_place__icontains=query)
         )
-        if sexe == "m"or"f":
+        if sexe == "m"or sexe =="f":
             q = q.filter(sexe=sexe)
         if archived == "true":
             q = q.filter(archived=True)
@@ -87,42 +88,41 @@ class Patients(APIView):
                 q= q.order_by('-'+order)
         if user:
             q = q.filter(user_id=user)
-        
         paginate = PageNumberPagination()
         results = paginate.paginate_queryset(queryset=q,request=request)
-        serializer = PatientFileSerializer(results,many=True)
+        serializer = PatientFileSerializer(results,many=True,context={'request':request})
         response = paginate.get_paginated_response(data=serializer.data)
         return response
 
     def post(self,request):
-        serializer = PatientFileSerializer(data=request.data)
+        serializer = PatientFileDetailSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data,status.HTTP_200_OK)
         print(serializer.errors)
         return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-class Patient(APIView):
+class PatientsDetail(APIView):
     queryset = User.objects.none()
-    def get(self,request,pid):
+    def get(self,request,pk):
         try:
-            patient = PatientFile.objects.get(id=pid)
+            patient = PatientFile.objects.get(id=pk)
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
-        serializer = PatientFileSerializer(patient)
+        serializer = PatientFileDetailSerializer(patient,context={'request':request})
         response = serializer.data
         response['user_first_name'] = patient.user.first_name
         response['user_last_name'] = patient.user.last_name
         return Response(response,status.HTTP_200_OK)
 
-    def put(self,request,pid):
+    def put(self,request,pk):
         try:
-            patient = PatientFile.objects.get(id=pid)
+            patient = PatientFile.objects.get(id=pk)
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         if not patient.archived:
-            serializer = PatientFileSerializer(patient,data=request.data,partial=True)
+            serializer = PatientFileDetailSerializer(patient,data=request.data,partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data,status.HTTP_200_OK)
@@ -131,11 +131,11 @@ class Patient(APIView):
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
 
 
-class PatientDocument(APIView):
+class PatientDocumentsDetail(APIView):
     queryset = User.objects.none()
-    def get(self,request,pid,did):
+    def get(self,request,pk):
         try:
-            document = ExternalDocument.objects.get(patient_id=pid,id=did)
+            document = ExternalDocument.objects.get(id=pk)
         except:
             return Response({'detail':'document does not exist'},status.HTTP_404_NOT_FOUND)
         serializer = ExternalDocumentSerializer(document)
@@ -149,52 +149,52 @@ class PatientDocument(APIView):
 
 class PatientDocuments(APIView):
     queryset = User.objects.none()
-    def get(self,request,pid):
-        documents = ExternalDocument.objects.filter(patient_id=pid).values('id')
-        serializer = ExternalDocumentsSerializer(documents,many=True)
+    def get(self,request,pk):
+        documents = ExternalDocument.objects.filter(patient_id=pk)
+        serializer = ExternalDocumentSerializer(documents,many=True)
         return Response(serializer.data,status.HTTP_200_OK)
     
-    def post(self,request,pid):
+    def post(self,request,pk):
         try:
-            patient = PatientFile.objects.get(id=pid)
+            patient = PatientFile.objects.get(id=pk)
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         if not patient.archived:
             serializer = ExternalDocumentSerializer(data=request.data)
-            if serializer.is_valid():
+            if serializer.is_valid(patient=patient):
                 serializer.save()
                 return Response(serializer.data,status.HTTP_200_OK)
-            print(serializer.errors)
             return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
 
 
 class PatientJournals(APIView):
     queryset = User.objects.none()
-    def get(self,request,pid):
-        journals = PatientJournal.objects.filter(patient_id=pid)
+    def get(self,request,pk):
+        journals = PatientJournal.objects.filter(patient_id=pk)
         serializer = PatientJournalSerializer(journals,many=True)
         return Response(serializer.data,status.HTTP_200_OK)
 
-    def post(self,request,pid):    
+    def post(self,request,pk):    
         try:
-            patient = PatientFile.objects.get(id=pid)
+            patient = PatientFile.objects.get(id=pk)
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         if not patient.archived:
             serializer = PatientJournalSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(patient=patient)
                 return Response(serializer.data,status.HTTP_200_OK)
+            print(serializer.errors)
             return Response({'detail':'invalid data'},status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({'detail':'file is archived'},status.HTTP_403_FORBIDDEN)
     
 
-class PatientJournal(APIView):
+class PatientJournalsDetail(APIView):
     queryset = User.objects.none()
-    def get(self,request,pid,jid):
+    def get(self,request,pk):
         try:
-            journal = PatientJournal.objects.get(patient_id=pid,id=jid)
+            journal = PatientJournal.objects.get(id=pk)
         except:
             return Response(status.HTTP_404_NOT_FOUND)
         serializer = PatientJournalSerializer(journal)

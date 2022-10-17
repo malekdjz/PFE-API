@@ -36,7 +36,7 @@ class PatientFile (models.Model):
 
 
 class ExternalDocument(models.Model):
-    patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientFile,on_delete=models.CASCADE,related_name='documents')
     image = models.ImageField(validators=[
         FileExtensionValidator(['jpg','png','jpeg']),
         validate_file_size,
@@ -48,7 +48,7 @@ class ExternalDocument(models.Model):
 
 
 class PatientJournal(models.Model):
-    patient=  models.ForeignKey(PatientFile,on_delete=models.CASCADE)
+    patient=  models.ForeignKey(PatientFile,on_delete=models.CASCADE,related_name='journal')
     locale_treatment = models.TextField(null=True,blank=True)
     general_treatment = models.TextField(null=True,blank=True)
     progress_report = models.TextField(null=True,blank=True)
