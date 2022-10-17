@@ -21,13 +21,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
+        groups = user.groups.values_list('name',flat=True)
+        roles = list(groups)
         # Add custom claims
-        token['id'] = user.id
         token['username'] = user.username
         token['first_name'] = user.first_name
         token['last_ame'] = user.last_name
         token['email'] = user.email
+        token['roles'] = roles
         # ...
 
         return token
@@ -95,7 +96,7 @@ class Patients(APIView):
         return response
 
     def post(self,request):
-        serializer = PatientFileDetailSerializer(data=request.data)
+        serializer = PatientFileDetailSerializer(data=request.data,context={'request':request})
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data,status.HTTP_200_OK)
@@ -122,7 +123,7 @@ class PatientsDetail(APIView):
         except:
             return Response({'detail':'patient file does not exist'},status.HTTP_404_NOT_FOUND)
         if not patient.archived:
-            serializer = PatientFileDetailSerializer(patient,data=request.data,partial=True)
+            serializer = PatientFileDetailSerializer(patient,data=request.data,partial=True,context={'request':request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data,status.HTTP_200_OK)
